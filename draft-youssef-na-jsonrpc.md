@@ -212,12 +212,6 @@ Our quasi-protocol is simple enough to be implemented in non-Kotlin endpoints, i
 
 --- back
 
-# Acknowledgments
-{:numbered="false"}
-
-The design approach and implementation has been heavily inspired by
-the kotlinx.rpc krpc [implementation](https://github.com/Kotlin/kotlinx-rpc/tree/1a45abae912a783bf3f610feabaec53d8f7a53e4/krpc).
-
 # Appendix A: Ktor Client API
 
 The Ktor client API is as follows:
@@ -284,3 +278,9 @@ public fun Route.rpc(
     }
 }
 ```
+
+# Acknowledgments
+{:numbered="false"}
+
+The design approach and implementation has been heavily inspired by
+the kotlinx.rpc krpc [implementation](https://github.com/Kotlin/kotlinx-rpc/tree/1a45abae912a783bf3f610feabaec53d8f7a53e4/krpc).
