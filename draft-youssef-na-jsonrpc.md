@@ -6,7 +6,6 @@ docname: draft-youssef-na-jsonrpc-latest
 submissiontype: independent
 number:
 date: 05 January 2026
-consensus: true
 v: 3
 keyword:
  - rpc
@@ -29,8 +28,7 @@ informative:
 
 --- abstract
 
-TODO Abstract
-
+This document specifies an implementation of the JSON-RPC 2.0 protocol in the kotlinx.rpc Kotlin Multiplatform library. It provides both a core, transport-agnostic API, as well as Ktor integrations. Further, a quasi-protocol is defined to support bidirectional streaming via Flows over JSON-RPC.
 
 --- middle
 
