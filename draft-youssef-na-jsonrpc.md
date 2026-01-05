@@ -117,7 +117,7 @@ These errors must be used by the implementation where appropriate.
 The error response's `message` field must contain the Exception's message.
 The error response's `data` field must contain, at a minimum, the fully-qualified name of the Exception class and the stacktrace.
 Other fields may be added as necessary.
-Alternatively, [`SerializedException`](https://github.com/Kotlin/kotlinx-rpc/blob/2b895329b779d6560363f4fb79eed0e27ea82e07/krpc/krpc-core/src/commonMain/kotlin/kotlinx/rpc/krpc/internal/SerializedException.kt), which is internally used by Krpc, may be moved into core and used for this purpose.
+Alternatively, [SerializedException](https://github.com/Kotlin/kotlinx-rpc/blob/2b895329b779d6560363f4fb79eed0e27ea82e07/krpc/krpc-core/src/commonMain/kotlin/kotlinx/rpc/krpc/internal/SerializedException.kt), which is internally used by Krpc, may be moved into core and used for this purpose.
 
 ## Batching
 JSON-RPC supports batching of requests into a single request (as an array).
