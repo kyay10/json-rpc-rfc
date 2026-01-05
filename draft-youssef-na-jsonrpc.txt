@@ -206,12 +206,24 @@ Table of Contents
    use the error code -32000, which is within the server error range
    defined by JSON-RPC.  Importantly, JSON-RPC reserves some error codes
    for special RPC errors, with the relevant ones being (adapted from
-   JSON-RPC 2.0 §5.1): | Code | Message |
-   Meaning | |------|---------|---------| | -32700 | Parse error |
-   Invalid JSON was received by the server | | -32600 | Invalid
-   Request | The JSON sent is not a valid Request object | | -32601 |
-   Method not found | The method does not exist / is not available | |
-   -32602 | Invalid params | Invalid method parameter(s) |
+   JSON-RPC 2.0 §5.1):
+
+    +========+=============+=========================================+
+    | Code   |   Message   |                 Meaning                 |
+    +========+=============+=========================================+
+    | -32700 | Parse error | Invalid JSON was received by the server |
+    +--------+-------------+-----------------------------------------+
+    | -32600 |   Invalid   |   The JSON sent is not a valid Request  |
+    |        |   Request   |                  object                 |
+    +--------+-------------+-----------------------------------------+
+    | -32601 |  Method not |    The method does not exist / is not   |
+    |        |    found    |                available                |
+    +--------+-------------+-----------------------------------------+
+    | -32602 |   Invalid   |       Invalid method parameter(s)       |
+    |        |    params   |                                         |
+    +--------+-------------+-----------------------------------------+
+
+                                 Table 1
 
    These errors must be used by the implementation where appropriate.
    The error response's message field must contain the Exception's

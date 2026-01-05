@@ -1218,7 +1218,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1"><a href="https://www.jsonrpc.org/specification">JSON-RPC 2.0</a> is a stateless remote procedure call (RPC) protocol based on JavaScript Object Notation (JSON). It has a simple request-response flow and is transport agnostic. <a href="https://github.com/Kotlin/kotlinx-rpc">Kotlinx.rpc</a> is a Kotlin Multiplatform (KMP) library that provides RPC abstractions for both clients and servers (hereafter referred to as endpoints). The library already has support for <a href="https://grpc.io/">gRPC</a> alongside its bespoke krpc protocol. It supports single responses via suspend functions, and bidirectional streaming via flows. It also supports marshalling exceptions.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1"><a href="https://www.jsonrpc.org/specification">JSON-RPC 2.0</a> is a stateless remote procedure call (RPC) protocol based on JavaScript Object Notation (JSON). It has a simple request-response flow and is transport agnostic.
+<a href="https://github.com/Kotlin/kotlinx-rpc">Kotlinx.rpc</a> is a Kotlin Multiplatform (KMP) library that provides RPC abstractions for both clients and servers (hereafter referred to as endpoints).
+The library already has support for <a href="https://grpc.io/">gRPC</a> alongside its bespoke krpc protocol. It supports single responses via suspend functions, and bidirectional streaming via flows. It also supports marshalling exceptions.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <div id="goals">
 <section id="section-1.1">
         <h3 id="name-goals">
@@ -1282,7 +1284,8 @@ svg :is([fill="white"], [fill^="#fff"]) {
         <h3 id="name-notifications">
 <a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-notifications" class="section-name selfRef">Notifications</a>
         </h3>
-<p id="section-2.1-1">JSON-RPC defines notifications as requests that must not be responded to. Importantly, the server can't repsond to them with errors, either.
+<p id="section-2.1-1">JSON-RPC defines notifications as requests that must not be responded to.
+Importantly, the server can't repsond to them with errors, either.
 While it seems natural to use a <code>Unit</code> return type for notifications, it can be surprising to the user that errors aren't propagated.
 To sidestep this problem, a custom <code>NotificationOk</code> return type is provided for notifications:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
 <div class="lang-kotlin sourcecode" id="section-2.1-2">
@@ -1363,18 +1366,44 @@ public class JsonRpcException(val code: Int, message: String): IllegalStateExcep
 </div>
 <p id="section-2.6-3">We make no effort to validate error codes, instead leaving it up to the user to provide appropriate codes.
 For all other exceptions, we use the error code <code>-32000</code>, which is within the server error range defined by JSON-RPC.
-Importantly, JSON-RPC reserves some error codes for special RPC errors, with the relevant ones being (adapted from JSON-RPC 2.0 §5.1):
-| Code | Message | Meaning |
-|------|---------|---------|
-| -32700 | Parse error | Invalid JSON was received by the server |
-| -32600 | Invalid Request | The JSON sent is not a valid Request object |
-| -32601 | Method not found | The method does not exist / is not available |
-| -32602 | Invalid params | Invalid method parameter(s) |<a href="#section-2.6-3" class="pilcrow">¶</a></p>
-<p id="section-2.6-4">These errors must be used by the implementation where appropriate.
+Importantly, JSON-RPC reserves some error codes for special RPC errors, with the relevant ones being (adapted from JSON-RPC 2.0 §5.1):<a href="#section-2.6-3" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+          <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Code</th>
+              <th class="text-center" rowspan="1" colspan="1">Message</th>
+              <th class="text-center" rowspan="1" colspan="1">Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">-32700</td>
+              <td class="text-center" rowspan="1" colspan="1">Parse error</td>
+              <td class="text-center" rowspan="1" colspan="1">Invalid JSON was received by the server</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">-32600</td>
+              <td class="text-center" rowspan="1" colspan="1">Invalid Request</td>
+              <td class="text-center" rowspan="1" colspan="1">The JSON sent is not a valid Request object</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">-32601</td>
+              <td class="text-center" rowspan="1" colspan="1">Method not found</td>
+              <td class="text-center" rowspan="1" colspan="1">The method does not exist / is not available</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">-32602</td>
+              <td class="text-center" rowspan="1" colspan="1">Invalid params</td>
+              <td class="text-center" rowspan="1" colspan="1">Invalid method parameter(s)</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-2.6-5">These errors must be used by the implementation where appropriate.
 The error response's <code>message</code> field must contain the Exception's message.
 The error response's <code>data</code> field must contain, at a minimum, the fully-qualified name of the Exception class and the stacktrace.
 Other fields may be added as necessary.
-Alternatively, <a href="https://github.com/Kotlin/kotlinx-rpc/blob/2b895329b779d6560363f4fb79eed0e27ea82e07/krpc/krpc-core/src/commonMain/kotlin/kotlinx/rpc/krpc/internal/SerializedException.kt">SerializedException</a>, which is internally used by Krpc, may be moved into core and used for this purpose.<a href="#section-2.6-4" class="pilcrow">¶</a></p>
+Alternatively, <a href="https://github.com/Kotlin/kotlinx-rpc/blob/2b895329b779d6560363f4fb79eed0e27ea82e07/krpc/krpc-core/src/commonMain/kotlin/kotlinx/rpc/krpc/internal/SerializedException.kt">SerializedException</a>, which is internally used by Krpc, may be moved into core and used for this purpose.<a href="#section-2.6-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="batching">
