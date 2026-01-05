@@ -34,7 +34,9 @@ This document specifies an implementation of the JSON-RPC 2.0 protocol in the ko
 
 # Introduction
 
-[JSON-RPC 2.0](https://www.jsonrpc.org/specification) is a stateless remote procedure call (RPC) protocol based on JavaScript Object Notation (JSON). It has a simple request-response flow and is transport agnostic. [Kotlinx.rpc](https://github.com/Kotlin/kotlinx-rpc) is a Kotlin Multiplatform (KMP) library that provides RPC abstractions for both clients and servers (hereafter referred to as endpoints). The library already has support for [gRPC](https://grpc.io/) alongside its bespoke krpc protocol. It supports single responses via suspend functions, and bidirectional streaming via flows. It also supports marshalling exceptions.
+[JSON-RPC 2.0](https://www.jsonrpc.org/specification) is a stateless remote procedure call (RPC) protocol based on JavaScript Object Notation (JSON). It has a simple request-response flow and is transport agnostic.
+[Kotlinx.rpc](https://github.com/Kotlin/kotlinx-rpc) is a Kotlin Multiplatform (KMP) library that provides RPC abstractions for both clients and servers (hereafter referred to as endpoints).
+The library already has support for [gRPC](https://grpc.io/) alongside its bespoke krpc protocol. It supports single responses via suspend functions, and bidirectional streaming via flows. It also supports marshalling exceptions.
 
 ## Goals
 - Provide a full implementation of JSON-RPC 2.0 protocol in kotlinx.rpc
@@ -55,7 +57,8 @@ This document specifies an implementation of the JSON-RPC 2.0 protocol in the ko
 
 ## Notifications
 
-JSON-RPC defines notifications as requests that must not be responded to. Importantly, the server can't repsond to them with errors, either.
+JSON-RPC defines notifications as requests that must not be responded to.
+Importantly, the server can't repsond to them with errors, either.
 While it seems natural to use a `Unit` return type for notifications, it can be surprising to the user that errors aren't propagated.
 To sidestep this problem, a custom `NotificationOk` return type is provided for notifications:
 
@@ -112,12 +115,13 @@ public class JsonRpcException(val code: Int, message: String): IllegalStateExcep
 We make no effort to validate error codes, instead leaving it up to the user to provide appropriate codes.
 For all other exceptions, we use the error code `-32000`, which is within the server error range defined by JSON-RPC.
 Importantly, JSON-RPC reserves some error codes for special RPC errors, with the relevant ones being (adapted from JSON-RPC 2.0 §5.1):
-| Code | Message | Meaning |
-|------|---------|---------|
-| -32700 | Parse error | Invalid JSON was received by the server |
-| -32600 | Invalid Request | The JSON sent is not a valid Request object |
+
+| Code   |     Message      |                   Meaning                    |
+|:-------|:----------------:|:--------------------------------------------:|
+| -32700 |   Parse error    |   Invalid JSON was received by the server    |
+| -32600 | Invalid Request  | The JSON sent is not a valid Request object  |
 | -32601 | Method not found | The method does not exist / is not available |
-| -32602 | Invalid params | Invalid method parameter(s) |
+| -32602 |  Invalid params  |         Invalid method parameter(s)          |
 
 These errors must be used by the implementation where appropriate.
 The error response's `message` field must contain the Exception's message.
