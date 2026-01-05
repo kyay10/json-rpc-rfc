@@ -60,16 +60,20 @@ TODO Abstract
 JSON-RPC defines notifications as requests that must not be responded to. Importantly, the server can't repsond to them with errors, either.
 While it seems natural to use a `Unit` return type for notifications, it can be surprising to the user that errors aren't propagated.
 To sidestep this problem, a custom `NotificationOk` return type is provided for notifications:
+
 ```kotlin
 public data object NotificationOk
 ```
+
 For example:
+
 ```kotlin
 @Rpc interface Foo {
     suspend fun noResponse(): NotificationOk
     suspend fun mightError()
 }
 ```
+
 `noResponse` is a notification, while `mightError` is a normal request that can result in an exception.
 
 ## Reserved method names
@@ -79,9 +83,11 @@ Instead, we assume that, if the user defines such a method, they know what they 
 ## Parameter encoding
 JSON-RPC allows parameters in a request to be passed by-position (as an array) or by-name (as an object).
 Since we'd like to support the full JSON-RPC spec, we provide a `ParameterEncoding` enum:
+
 ```kotlin
 public enum class ParameterEncoding { ByName, ByPosition }
 ```
+
 API methods should have `ByName` as a default where possible, since it's more human-readable.
 The choice of parameter encoding is configurable on the client only. The server must support both encodings.
 A minor complication arises with the currently-experimental [context parameters](https://github.com/Kotlin/KEEP/blob/master/proposals/context-parameters.md), since context parameters may have no name.
@@ -100,9 +106,11 @@ Hence, we use `StringFormat` from `kotlinx.serialization` as the serialization a
 ## Errors
 JSON-RPC requires an error code in error responses.
 Kotlin exceptions don't come with error codes, so, we provide a public `JsonRpcException` type as follows:
+
 ```kotlin
 public class JsonRpcException(val code: Int, message: String): IllegalStateException(message)
 ```
+
 We make no effort to validate error codes, instead leaving it up to the user to provide appropriate codes.
 For all other exceptions, we use the error code `-32000`, which is within the server error range defined by JSON-RPC.
 Importantly, JSON-RPC reserves some error codes for special RPC errors, with the relevant ones being (adapted from JSON-RPC 2.0 §5.1):
@@ -128,17 +136,20 @@ The relaxed constraint is to ensure that the client can make requests in a timel
 ## Transport
 Since the protocol communicates through JSON, all we require is a transport that can send and receive strings.
 We thus define a simple `JsonRpcTransport` interface as follows:
+
 ```kotlin
 public interface JsonRpcTransport : CoroutineScope {
     suspend fun send(message: String)
     suspend fun receive(): String
 }
 ```
+
 Importantly, the transport is also a `CoroutineScope`, to allow for cancellation when needed. IT also thus provides a `coroutineContext` which determines important coroutine properties such as the dispatcher.
 
 ## Entrypoints
 Kotlinx.rpc provides `RpcClient` and `RpcServer` interfaces as the main entrypoints for clients and servers, respectively.
 We thus provide `JsonRpcClient` and `JsonRpcServer` implementations of these interfaces:
+
 ```kotlin
 public class JsonRpcClient(
 	private val format: StringFormat,
@@ -159,6 +170,7 @@ We provide Ktor integrations for both client and server.
 
 ## Transport
 Our canonical Ktor transport implementation, using Ktor's `WebSocketSession`, is as follows:
+
 ```kotlin
 @InternalRpcApi
 public class KtorTransport(private val webSocketSession: WebSocketSession) : JsonRpcTransport, CoroutineScope by webSocketSession {
@@ -167,6 +179,7 @@ public class KtorTransport(private val webSocketSession: WebSocketSession) : Jso
     override suspend fun receive(): KrpcTransportMessage = webSocketSession.incoming.receive() as? Frame.Text ?: error("Unsupported websocket frame type: ${message::class}. Expected Frame.Text")
 }
 ```
+
 We use `@InternalRpcApi` from core to denote that this API is not intended for public use.
 
 ## Client
@@ -192,11 +205,13 @@ The sender then responds with the next item from the Flow (and can error if nece
 Finally, when the Flow is complete, the sender simply returns an error response with code `-32001` to indicate completion.
 If the flow is cancelled by the client, they must send a request with method `cancelFlow` and the Flow id as the sole parameter.
 For instance, consider the following service:
+
 ```kotlin
 @Rpc interface Numbers {
     fun getNumbers(): Flow<Int>
 }
 ```
+
 When the client calls `getNumbers`, nothing happens yet, since Flows are cold.
 When the client starts collecting the Flow, the client sends a request to the server to invoke `getNumbers`.
 The server responds with a Flow id (say, `42`).
@@ -215,9 +230,10 @@ Our quasi-protocol is simple enough to be implemented in non-Kotlin endpoints, i
 # Appendix A: Ktor Client API
 
 The Ktor client API is as follows:
+
 ```kotlin
 internal val JsonRpcClientFormatKey = AttributeKey<StringFormat>("JsonRpcClientFormatKey")
-internal val JsonRpcClientEncodingKey = AttributeKey<StringFormat>("JsonRpcClientEncodingKey")
+internal val JsonRpcClientEncodingKey = AttributeKey<ParameterEncoding>("JsonRpcClientEncodingKey")
 public fun HttpClientConfig<*>.installJsonRpc(format: StringFormat, encoding: ParameterEncoding = ParameterEncoding.ByName) {
     pluginOrNull(WebSockets) ?: install(WebSockets)
     attributes.put(JsonRpcClientFormatKey, format)
@@ -247,7 +263,9 @@ public fun HttpClient.rpc(
 
 # Appendix B: Ktor Server API
 The Ktor server API is as follows:
+
 ```kotlin
+internal val JsonRpcServerFormatKey = AttributeKey<StringFormat>("JsonRpcServerFormatKey")
 public fun Application.installJsonRpc(format: StringFormat) {
     pluginOrNull(WebSockets) ?: install(WebSockets)
     attributes.put(JsonRpcServerFormatKey, format)
